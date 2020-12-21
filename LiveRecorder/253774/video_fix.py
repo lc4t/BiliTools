@@ -50,8 +50,8 @@ def convert(files):
         white_list.add(i)   # A, B, C, 0
         # delete
 
-
-os.mkdir('wait_upload')
+if not os.path.exists('wait_upload'):
+    os.mkdir('wait_upload')
 
 while(1):
     now_files = set(os.listdir(os.getcwd()))   # A, B, C, 0
