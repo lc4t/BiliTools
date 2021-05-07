@@ -4,13 +4,11 @@ import time
 import sys
 import traceback
 
-old_files = set(os.listdir(os.getcwd()))    # 0, A, B, C
-now_files = set()   #
 
 
 white_list = set([sys.argv[0], 'wait_upload'])  # 0
 
-
+old_files = set()
 def convert(files):
     for i in files:
         fname = i
@@ -44,10 +42,11 @@ def convert(files):
                 ############
                 print(f'mv {fname} wait_upload/{wrong_name}')
                 print(os.popen(f'mv {fname} wait_upload/{wrong_name}').read(), end='')
+            white_list.add(i)
         except Exception as e:
             traceback.print_exc()
         #print(os.popen('mv %s tmp' % fname).read(), end='')
-        white_list.add(i)   # A, B, C, 0
+        #white_list.add(i)   # A, B, C, 0
         # delete
 
 if not os.path.exists('wait_upload'):
@@ -55,16 +54,22 @@ if not os.path.exists('wait_upload'):
 
 while(1):
     now_files = set(os.listdir(os.getcwd()))   # A, B, C, 0
-    now_files -= white_list
-    old_files -= white_list
+    now_files -= white_list # 白名单不处理
+    old_files = set()
+    for f in now_files:
+        if not f.endswith('.flv'):
+            continue
+        # 检测到5min无变化的flv文件
+        if time.time() - os.path.getmtime(f) > 60 * 5:
+            old_files.add(f)
+            break
 
-
-
-    if now_files == old_files:
+    if not old_files:
         pass
     else:
-        convert(old_files) # A, B, C
-        old_files = now_files
+        convert(old_files) # 这里写的是需要处理的，处理完会删除
 
-    time.sleep(3)
+
+
+    time.sleep(5)
     # break
