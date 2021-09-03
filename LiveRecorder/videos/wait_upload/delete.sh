@@ -1,4 +1,3 @@
-
 function check() {
 
 echo "<meta charset=\"utf-8\">"
@@ -18,16 +17,16 @@ bypy list
 echo "--------"
 a=`bypy list | grep '.flv' | awk '{print $2":"$3}'`
 for line in $a
-do 
+do
   filename=`echo $line | cut -d ":" -f1`
-  if [ ! -f $filename  ]; then 
+  if [ ! -f $filename  ]; then
     echo "$filename 本地已被删除!"
     continue
   fi
   remote_size=`echo $line | cut -d ":" -f2`
   local_size=`ls -l $filename | awk '{print $5}'`
   #echo $filename": local "$local_size", remote "$remote_size
-  if [ $local_size = $remote_size ]; then
+  if [ $local_size = $remote_size ] && [ ${remote_size} -ne 0 ] ; then
     echo  "rm -f $filename 删除! $local_size=$remote_size"
     rm -f $filename
   fi
@@ -43,4 +42,4 @@ while true
 do
     check
     sleep 60
-done  
+done
